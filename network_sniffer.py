@@ -1,4 +1,4 @@
-from scapy.all import sniff, IP, TCP, UDP, ICMP
+from scapy.all import sniff, IP, TCP, UDP, ICMP, Raw
 
 
 def packet_callback(packet):
@@ -25,11 +25,24 @@ def packet_callback(packet):
         else:
             protocol = "Other"
 
-        print(
-            f"[{protocol}] "
-            f"{source_ip}:{source_port} -> "
-            f"{destination_ip}:{destination_port}"
-        )
+        print("=" * 60)
+        print(f"Protocol       : {protocol}")
+        print(f"Source IP      : {source_ip}")
+        print(f"Destination IP : {destination_ip}")
+        print(f"Source Port    : {source_port}")
+        print(f"Destination Port: {destination_port}")
+
+        if Raw in packet:
+            payload = bytes(packet[Raw].load)
+
+            try:
+                payload_text = payload.decode("utf-8", errors="replace")
+            except Exception:
+                payload_text = str(payload)
+
+            print(f"Payload        : {payload_text[:100]}")
+        else:
+            print("Payload        : No payload")
 
 
 print("Network Sniffer başladı...")
